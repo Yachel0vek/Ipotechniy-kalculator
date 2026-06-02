@@ -11,7 +11,6 @@ class FixedCalc(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Ипотечный калькулятор MVP")
-        
         self.resize(650, 600)
 
         main_widget = QWidget()
@@ -63,7 +62,7 @@ class FixedCalc(QMainWindow):
 
         self.txt_sum.textChanged.connect(lambda: self.format_number_input(self.txt_sum))
 
-        #кнокпи ебать
+        # Buttons
         self.btn_calc = QPushButton("Рассчитать")
         self.btn_calc.clicked.connect(self.calculate)
         grid.addWidget(self.btn_calc, 6, 0, 1, 2)
@@ -75,7 +74,7 @@ class FixedCalc(QMainWindow):
         self.lbl_res = QLabel("Результаты расчета будут здесь")
         grid.addWidget(self.lbl_res, 8, 0, 1, 2)
 
-        # даиграма
+        # Chart
         self.chart = QChart()
         self.chart.setTitle("Соотношение выплат")
         self.chart.setBackgroundBrush(QBrush(QColor("#000000")))
@@ -87,7 +86,7 @@ class FixedCalc(QMainWindow):
         self.chart_view.setFixedSize(300, 250) 
         top_layout.addWidget(self.chart_view)
 
-        # бля таблицп
+        # Table
         self.table = QTableWidget()
         self.table.setColumnCount(4)
         self.table.setHorizontalHeaderLabels(["Месяц", "Платеж", "Проценты", "Остаток долга"])
@@ -97,7 +96,7 @@ class FixedCalc(QMainWindow):
         self.table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         
         main_layout.addWidget(self.table)
-    #функция про разделение чисел
+
     def format_number_input(self, line_edit):
         line_edit.blockSignals(True)
         cursor_pos = line_edit.cursorPosition()
@@ -113,3 +112,20 @@ class FixedCalc(QMainWindow):
             line_edit.setCursorPosition(cursor_pos + (spaces_after - spaces_before))
             
         line_edit.blockSignals(False)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter:
+            self.calculate()
+        elif event.key() == Qt.Key.Key_Escape:
+            self.clear_all()
+
+    def clear_all(self):
+        self.txt_sum.clear()
+        self.txt_term.clear()
+        self.txt_rate.clear()
+        self.txt_date.setText("01.06.2026")
+        self.txt_inflation_percent.setText("4.0")
+        self.check_inflation.setChecked(False)
+        self.lbl_res.setText("Очищено")
+        self.table.setRowCount(0)
+        self.chart.removeAllSeries()
