@@ -12,7 +12,7 @@ class FixedCalc(QMainWindow):
         super().__init__()
         self.setWindowTitle("Ипотечный калькулятор MVP")
         self.resize(650, 600)
-
+     
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
         
@@ -129,3 +129,39 @@ class FixedCalc(QMainWindow):
         self.lbl_res.setText("Очищено")
         self.table.setRowCount(0)
         self.chart.removeAllSeries()
+
+    def calculate(self):
+        if not self.txt_sum.text() or not self.txt_term.text() or not self.txt_rate.text():
+            self.lbl_res.setText("Заполни все поля перед расчетом!")
+            return
+
+        # Парсим стартовую дату получения
+        try:
+            start_date = datetime.strptime(self.txt_date.text().strip(), "%d.%m.%Y")
+        except ValueError:
+            self.lbl_res.setText("Неверный формат даты! Используй ДД.ММ.ГГГГ")
+            return
+
+        credit_sum = float(self.txt_sum.text().replace(" ", ""))
+        months = int(float(self.txt_term.text()) * 12)
+        month_rate = (float(self.txt_rate.text()) / 100) / 12
+
+        rem_debt = credit_sum
+        total_interest = 0
+        self.table.setRowCount(months)
+
+        try:
+            inf_val = float(self.txt_inflation_percent.text().replace(",", ".")) / 100
+        except ValueError:
+            inf_val = 0.0
+            
+        inf_rate = (inf_val / 12) if self.check_inflation.isChecked() else 0.0
+
+        months_ru = [
+            "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+            "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+        ]
+
+        for i in range(months):
+            interest_part = rem_debt * month_rate
+               
