@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QHBoxLayout, QGridLayout, QLabel, QLineEdit, 
                              QComboBox, QPushButton, QTableWidget, QTableWidgetItem, QCheckBox, QHeaderView)
 from PyQt6.QtCore import Qt
-from PyQt6.QtCharts import QChart, QChartView, QPieSeries
+from PyQt6.QtCharts import QChart, QChartView, QPieSeries, QPieSlice
 from PyQt6.QtGui import QColor, QPainter, QBrush
 
 class FixedCalc(QMainWindow):
@@ -77,14 +77,13 @@ class FixedCalc(QMainWindow):
         # Chart
         self.chart = QChart()
         self.chart.setTitle("Соотношение выплат")
-        self.chart.setBackgroundBrush(QBrush(QColor("#000000")))
-        self.chart.setTitleBrush(QBrush(QColor("#FFFFFF")))
+        self.chart.setBackgroundVisible(False)  # Делает фон прозрачным
+        self.chart.setTitleBrush(QBrush(QColor("#000000")))  # Заголовок теперь черный
 
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
-        self.chart_view.setBackgroundBrush(QBrush(QColor("#000000")))
-        self.chart_view.setFixedSize(300, 250) 
-        top_layout.addWidget(self.chart_view)
+        self.chart_view.setMinimumSize(350, 250) 
+        top_layout.addWidget(self.chart_view, 1)
 
         # Table
         self.table = QTableWidget()
@@ -135,14 +134,12 @@ class FixedCalc(QMainWindow):
             self.lbl_res.setText("Ошибка: Заполни все поля перед расчетом!")
             return
 
-        # Парсим стартовую дату получения
         try:
             start_date = datetime.strptime(self.txt_date.text().strip(), "%d.%m.%Y")
         except ValueError:
             self.lbl_res.setText("Ошибка: Неверный формат даты! Используй ДД.ММ.ГГГГ")
             return
 
-        # Валидация числовых вводов с учетом ПМИ
         try:
             credit_sum = float(self.txt_sum.text().replace(" ", "").replace(",", "."))
             term_years = float(self.txt_term.text().replace(",", "."))
@@ -218,6 +215,10 @@ class FixedCalc(QMainWindow):
         slice_percent.setLabelBrush(QBrush(QColor("#FFFFFF")))
         
         self.chart.addSeries(series)
+        for slice in series.slices():
+            slice.setLabelVisible(True)
+            slice.setLabelPosition(QPieSlice.LabelPosition.LabelOutside)
+        series.setPieSize(0.7)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
