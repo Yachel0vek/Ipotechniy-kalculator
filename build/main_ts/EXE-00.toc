@@ -3,7 +3,7 @@
  False,
  False,
  False,
- 'c:\\Users\\user\\Desktop\\xdct\\lab\\kursovaya\\код '
+ 'C:\\Users\\user\\Desktop\\xdct\\lab\\kursovaya\\код '
  'ебучий\\.venv\\Lib\\site-packages\\PyInstaller\\bootloader\\images\\icon-windowed.ico',
  None,
  False,
@@ -59,7 +59,7 @@
    'ебучий\\build\\main_ts\\localpycs\\pyimod04_pywin32.pyc',
    'PYMODULE'),
   ('pyiboot01_bootstrap',
-   'c:\\Users\\user\\Desktop\\xdct\\lab\\kursovaya\\код '
+   'C:\\Users\\user\\Desktop\\xdct\\lab\\kursovaya\\код '
    'ебучий\\.venv\\Lib\\site-packages\\PyInstaller\\loader\\pyiboot01_bootstrap.py',
    'PYSOURCE'),
   ('pyi_rth_inspect',
@@ -106,9 +106,9 @@
  [],
  False,
  False,
- 1780697266,
+ 1780697692,
  [('runw.exe',
-   'c:\\Users\\user\\Desktop\\xdct\\lab\\kursovaya\\код '
+   'C:\\Users\\user\\Desktop\\xdct\\lab\\kursovaya\\код '
    'ебучий\\.venv\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\runw.exe',
    'EXECUTABLE')],
  'C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python313\\python313.dll')

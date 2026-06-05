@@ -35,7 +35,7 @@
    'ебучий\\build\\main_ts\\localpycs\\pyimod04_pywin32.pyc',
    'PYMODULE'),
   ('pyiboot01_bootstrap',
-   'c:\\Users\\user\\Desktop\\xdct\\lab\\kursovaya\\код '
+   'C:\\Users\\user\\Desktop\\xdct\\lab\\kursovaya\\код '
    'ебучий\\.venv\\Lib\\site-packages\\PyInstaller\\loader\\pyiboot01_bootstrap.py',
    'PYSOURCE'),
   ('pyi_rth_inspect',
