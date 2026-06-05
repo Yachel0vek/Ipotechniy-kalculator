@@ -12,7 +12,7 @@ class FixedCalc(QMainWindow):
         super().__init__()
         self.setWindowTitle("Ипотечный калькулятор MVP")
         self.resize(650, 600)
-     
+
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
         
@@ -164,4 +164,53 @@ class FixedCalc(QMainWindow):
 
         for i in range(months):
             interest_part = rem_debt * month_rate
-               
+            
+            if self.combo_type.currentIndex() == 0:
+                coef = (month_rate * (1 + month_rate) ** months) / (((1 + month_rate) ** months) - 1)
+                payment = credit_sum * coef
+                main_debt_part = payment - interest_part
+            else:
+                main_debt_part = credit_sum / months
+                payment = main_debt_part + interest_part
+
+            rem_debt -= main_debt_part
+            total_interest += interest_part
+
+            discount = (1 + inf_rate) ** (i + 1)
+
+            # Вычисляем текущую дату для каждого платежа (сдвиг на i месяцев вперед)
+            current_month_index = (start_date.month - 1 + i) % 12
+            current_year = start_date.year + (start_date.month - 1 + i) // 12
+            date_str = f"{months_ru[current_month_index]} {current_year}"
+
+            # Записываем в таблицу номер и дату в формате: 1 (Июнь 2026)
+            self.table.setItem(i, 0, QTableWidgetItem(f"{i + 1} ({date_str})"))
+            self.table.setItem(i, 1, QTableWidgetItem(f"{(payment / discount):,.2f}".replace(",", " ")))
+            self.table.setItem(i, 2, QTableWidgetItem(f"{(interest_part / discount):,.2f}".replace(",", " ")))
+            self.table.setItem(i, 3, QTableWidgetItem(f"{(max(0.0, rem_debt) / discount):,.2f}".replace(",", " ")))
+
+        total_sum_str = f"{(credit_sum + total_interest):,.2f}".replace(",", " ")
+        total_interest_str = f"{total_interest:,.2f}".replace(",", " ")
+        self.lbl_res.setText(f"Переплата: {total_interest_str} руб. | Всего выплат: {total_sum_str} руб.")
+
+        self.chart.removeAllSeries()
+        series = QPieSeries()
+        
+        slice_debt = series.append("Основной долг", credit_sum)
+        slice_percent = series.append("Проценты", total_interest)
+        
+        slice_debt.setColor(QColor("#9ACD32"))    
+        slice_percent.setColor(QColor("#FF8C00")) 
+        
+        slice_debt.setLabelVisible(True)
+        slice_percent.setLabelVisible(True)
+        slice_debt.setLabelBrush(QBrush(QColor("#FFFFFF")))
+        slice_percent.setLabelBrush(QBrush(QColor("#FFFFFF")))
+        
+        self.chart.addSeries(series)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = FixedCalc()
+    window.show()
+    sys.exit(app.exec())
