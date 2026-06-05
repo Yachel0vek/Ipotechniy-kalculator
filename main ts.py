@@ -132,30 +132,42 @@ class FixedCalc(QMainWindow):
 
     def calculate(self):
         if not self.txt_sum.text() or not self.txt_term.text() or not self.txt_rate.text():
-            self.lbl_res.setText("Заполни все поля перед расчетом!")
+            self.lbl_res.setText("Ошибка: Заполни все поля перед расчетом!")
             return
 
         # Парсим стартовую дату получения
         try:
             start_date = datetime.strptime(self.txt_date.text().strip(), "%d.%m.%Y")
         except ValueError:
-            self.lbl_res.setText("Неверный формат даты! Используй ДД.ММ.ГГГГ")
+            self.lbl_res.setText("Ошибка: Неверный формат даты! Используй ДД.ММ.ГГГГ")
             return
 
-        credit_sum = float(self.txt_sum.text().replace(" ", ""))
-        months = int(float(self.txt_term.text()) * 12)
-        month_rate = (float(self.txt_rate.text()) / 100) / 12
+        # Валидация числовых вводов с учетом ПМИ
+        try:
+            credit_sum = float(self.txt_sum.text().replace(" ", "").replace(",", "."))
+            term_years = float(self.txt_term.text().replace(",", "."))
+            months = int(term_years * 12)
+            rate_val = float(self.txt_rate.text().replace(",", "."))
+            month_rate = (rate_val / 100) / 12
+
+            inf_val = 0.0
+            if self.txt_inflation_percent.text():
+                inf_val = float(self.txt_inflation_percent.text().replace(",", "."))
+
+            # Проверка на отрицательные числа и нули
+            if credit_sum <= 0 or months <= 0 or rate_val <= 0 or inf_val < 0:
+                self.lbl_res.setText("Ошибка: Значения кредита должны быть больше нуля!")
+                return
+
+        except ValueError:
+            self.lbl_res.setText("Ошибка: Вводи только числа! Никаких букв и спецсимволов.")
+            return
 
         rem_debt = credit_sum
         total_interest = 0
         self.table.setRowCount(months)
 
-        try:
-            inf_val = float(self.txt_inflation_percent.text().replace(",", ".")) / 100
-        except ValueError:
-            inf_val = 0.0
-            
-        inf_rate = (inf_val / 12) if self.check_inflation.isChecked() else 0.0
+        inf_rate = ((inf_val / 100) / 12) if self.check_inflation.isChecked() else 0.0
 
         months_ru = [
             "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
@@ -178,12 +190,10 @@ class FixedCalc(QMainWindow):
 
             discount = (1 + inf_rate) ** (i + 1)
 
-            # Вычисляем текущую дату для каждого платежа (сдвиг на i месяцев вперед)
             current_month_index = (start_date.month - 1 + i) % 12
             current_year = start_date.year + (start_date.month - 1 + i) // 12
             date_str = f"{months_ru[current_month_index]} {current_year}"
 
-            # Записываем в таблицу номер и дату в формате: 1 (Июнь 2026)
             self.table.setItem(i, 0, QTableWidgetItem(f"{i + 1} ({date_str})"))
             self.table.setItem(i, 1, QTableWidgetItem(f"{(payment / discount):,.2f}".replace(",", " ")))
             self.table.setItem(i, 2, QTableWidgetItem(f"{(interest_part / discount):,.2f}".replace(",", " ")))
