@@ -77,8 +77,8 @@ class FixedCalc(QMainWindow):
         # Chart
         self.chart = QChart()
         self.chart.setTitle("Соотношение выплат")
-        self.chart.setBackgroundVisible(False)  # Делает фон прозрачным
-        self.chart.setTitleBrush(QBrush(QColor("#000000")))  # Заголовок теперь черный
+        self.chart.setBackgroundVisible(False) 
+        self.chart.setTitleBrush(QBrush(QColor("#000000")))
 
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -151,7 +151,6 @@ class FixedCalc(QMainWindow):
             if self.txt_inflation_percent.text():
                 inf_val = float(self.txt_inflation_percent.text().replace(",", "."))
 
-            # Проверка на отрицательные числа и нули
             if credit_sum <= 0 or months <= 0 or rate_val <= 0 or inf_val < 0:
                 self.lbl_res.setText("Ошибка: Значения кредита должны быть больше нуля!")
                 return
